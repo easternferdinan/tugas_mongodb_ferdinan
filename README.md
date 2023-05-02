@@ -1,3 +1,11 @@
-# Template React JS dari Eduwork
+# Tugas MongoDB (Week 10)
 
-gunakan template ini untuk mengerjakan tugas integrasi react x express dengan studi kasus CRUDS
+Created with Node.JS v14.21.3
+
+### How to run
+
+    npm start
+
+and then
+
+    node /server/app.js

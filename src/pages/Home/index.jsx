@@ -1,43 +1,106 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './index.scss';
 
 const Home = () => {
-  return(
+  const [searchQuery, setSearchQuery] = useState(false);
+  const [products, setProducts] = useState({});
+  const [productsCache, setProductsCache] = useState({});
+  const [refetchTrigger, setRefetchTrigger] = useState(true);
+
+  useEffect(() => {
+    if (refetchTrigger) {
+      fetch("http://localhost:3001/api/")
+      .then(response => response.json())
+      .then(data => {
+        setProducts(data);
+        setRefetchTrigger(false)
+      })
+      .catch(error => console.error(error));
+    }
+  }, [refetchTrigger]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setProducts(productsCache);
+    } else {
+      setProductsCache(products);
+      const filteredData = productsCache.filter(product => {
+        let priceString = product.price.toString();
+        let stockString = product.stock.toString();
+
+        return (
+          product.name.includes(searchQuery) || priceString.includes(searchQuery) 
+          || stockString.includes(searchQuery) || product._id.includes(searchQuery)
+        )
+      });
+      setProducts(filteredData);
+    }
+  }, [searchQuery])
+
+  function dropProduct(productID) {
+    fetch(`http://localhost:3001/api/delete-product/${productID}`, {
+      method: "DELETE"
+    })
+    .then(() => {
+      console.log("Deleted: " + productID);
+      setRefetchTrigger(true);
+    })
+    .catch(error => console.error(error));
+  }
+
+  function productsRender() {
+    if (products.length > 0) {
+      return products.map((product, index) => (
+        <tr key={index}>
+          <td>{product._id}</td>
+          <td>{product.name}</td>
+          <td className='text-right'>{product.price}</td>
+          <td className="text-center">
+            <Link 
+              to={{
+                pathname: "/detail",
+                state: product
+              }} 
+              className="btn btn-sm btn-info"
+              >Detail</Link>
+            <Link 
+              to={{
+                pathname: "/edit",
+                state: product
+              }}
+              className="btn btn-sm btn-warning"
+              >Edit</Link>
+            <button className='btn btn-sm btn-danger' onClick={() => dropProduct(product._id)}>Delete</button>
+          </td>
+        </tr>
+      ))
+    } else {
+      return (
+        <tr>
+          <td><small>No data</small></td>
+        </tr>
+      )
+    }
+  }
+
+  return (
     <div className="main">
-      <Link to="/tambah" className="btn btn-primary">Tamah Produk</Link>
+      <Link to="/tambah" className="btn btn-primary">Tambah Produk</Link>
       <div className="search">
-        <input type="text" placeholder="Masukan kata kunci..."/>
+        <input type="text" placeholder="Masukan kata kunci..." onChange={event => setSearchQuery(event.target.value)}/>
       </div>
       <table className="table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Name</th>
-            <th className="text-right">Price</th>
-            <th className="text-center">Action</th>
+            <th className='text-right'>Price</th>
+            <th className='text-center'>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Laptop</td>
-            <td className="text-right">RP. 20.000.000</td>
-            <td className="text-center">
-              <Link to="/detail" className="btn btn-sm btn-info">Detail</Link>
-              <Link to="/edit" className="btn btn-sm btn-warning">Edit</Link>
-              <Link to="#" className="btn btn-sm btn-danger">Delete</Link>
-            </td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Monitor</td>
-            <td className="text-right">RP. 10.000.000</td>
-            <td className="text-center">
-              <Link to="/detail" className="btn btn-sm btn-info">Detail</Link>
-              <Link to="/edit" className="btn btn-sm btn-warning">Edit</Link>
-              <Link to="#" className="btn btn-sm btn-danger">Delete</Link>
-            </td>
-          </tr>
+          {productsRender()}
         </tbody>
       </table>
     </div>
