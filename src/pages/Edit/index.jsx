@@ -14,7 +14,7 @@ const Edit = () => {
 
   function handleSubmit(event) {
     event.preventDefault();
-    fetch('http://localhost:3001/api/update-product', {
+    fetch('https://eager-pear-handbag.cyclic.app/api/update-product', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

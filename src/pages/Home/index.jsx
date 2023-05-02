@@ -10,7 +10,7 @@ const Home = () => {
 
   useEffect(() => {
     if (refetchTrigger) {
-      fetch("http://localhost:3001/api/")
+      fetch("https://eager-pear-handbag.cyclic.app/api/")
       .then(response => response.json())
       .then(data => {
         setProducts(data);
@@ -39,7 +39,7 @@ const Home = () => {
   }, [searchQuery])
 
   function dropProduct(productID) {
-    fetch(`http://localhost:3001/api/delete-product/${productID}`, {
+    fetch(`https://eager-pear-handbag.cyclic.app/api/delete-product/${productID}`, {
       method: "DELETE"
     })
     .then(() => {

@@ -15,7 +15,7 @@ const Tambah = () => {
 
     event.preventDefault();
     setDataSubmitted(false);
-    fetch('http://localhost:3001/api/add-product', {
+    fetch('https://eager-pear-handbag.cyclic.app/api/add-product', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
